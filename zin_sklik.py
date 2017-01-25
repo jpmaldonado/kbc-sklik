@@ -14,7 +14,7 @@ from keboola import docker
 class Campaigns:
     # Custom extractor 
     
-    def run():
+    def run(self):
         # initialize KBC configuration
         cfg = docker.Config()
         # validate application parameters
