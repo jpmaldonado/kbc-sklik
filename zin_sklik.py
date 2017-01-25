@@ -77,7 +77,18 @@ class Campaigns:
             # Get the campaigns table
             res = s.campaigns.get(dict(session=session), [camp_ids[ix]])
             
-            camps.append(res)
+            
+            camps_cols = ['id','name','deleted',
+                    'status', 'dayBudget', 'exhaustedDayBudget',
+                    'adSelection','createDate','totalBudget',
+                    'exhaustedTotalBudget', 'totalClicks',
+                    'exhaustedTotalClicks', 'userId'] 
+                    
+            d = {}                    
+            for col in camps_cols:                    
+                d[col] = res['campaigns'][0][col]
+                
+            camps.append(d)
         
         stats_df = pd.DataFrame.from_dict(stats)
         stats_df = stats_df[['campaign_id',
@@ -87,16 +98,9 @@ class Campaigns:
                                 'price',
                                 'impressions']]
                                 
-                                
-        camps_cols = ['id','name','deleted',
-                    'status', 'dayBudget', 'exhaustedDayBudget',
-                    'adSelection','createDate','totalBudget',
-                    'exhaustedTotalBudget', 'totalClicks',
-                    'exhaustedTotalClicks', 'userId'] 
-                    
-        
+
         camps_df = pd.DataFrame.from_dict(camps)                                
-        camps_df = camps_df[camps_cols]
+        
         ## Get reading parameters from KBC                                
         
         tables = cfg.get_expected_output_tables()
