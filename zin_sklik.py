@@ -82,11 +82,7 @@ class Campaigns:
         
         
         tables = cfg.get_expected_output_tables()
-        
-        
-        if len(tables) != 1:
-            raise ValueError("Output mapping must contain one table only.")
-        
+       
             
         out_table_stats = tables[0]
         out_table_camps = tables[1]
