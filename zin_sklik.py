@@ -41,7 +41,8 @@ class Campaigns:
                     for i in range(len(camp_list_res['campaigns'])) ]                               
                                        
                                        
-        stats = []            
+        stats = []
+        camps = []            
         
         for ix in range(len(camp_ids)):
             
@@ -65,21 +66,30 @@ class Campaigns:
                 stats.append(tmp)
                 
                 
-        # Get the campaigns table
-        res = s.campaigns.get(dict(session=session), [camp_ids[ix]])
+            # Get the campaigns table
+            res = s.campaigns.get(dict(session=session), [camp_ids[ix]])
+            
+            df = pd.DataFrame.from_dict(res['campaigns'])   
+            
+            cols = ['id','name','deleted',
+                    'status', 'dayBudget', 'exhaustedDayBudget',
+                    'adSelection','createDate','totalBudget',
+                    'exhaustedTotalBudget', 'totalClicks',
+                    'exhaustedTotalClicks', 'userId'] 
+                    
+            camps.append(df[cols])
         
-        df = pd.DataFrame.from_dict(res['campaigns'])   
+        stats_df = pd.DataFrame.from_dict(stats)
+        stats_df = stats_df[['campaign_id',
+                                'campaign_name',
+                                'date',
+                                'clicks',
+                                'price',
+                                'impressions']]
         
-        cols = ['id','name','deleted',
-                'status', 'dayBudget', 'exhaustedDayBudget',
-                'adSelection','createDate','totalBudget',
-                'exhaustedTotalBudget', 'totalClicks',
-                'exhaustedTotalClicks', 'userId'] 
-                
-        camps = df[cols]                    
-        
-        output = pd.DataFrame.from_dict(stats)
-        
+        camps_df = pd.DataFrame.from_dict(camps)                                
+
+        ## Get reading parameters from KBC                                
         
         tables = cfg.get_expected_output_tables()
        
@@ -93,13 +103,8 @@ class Campaigns:
         
         
         ## Save the CSVs
-        output[['campaign_id',
-                'campaign_name',
-                'date',
-                'clicks',
-                'price',
-                'impressions']].to_csv(out_file_stats, index = False)
+        stats_df.to_csv(out_file_stats, index = False)
                 
-        camps.to_csv(out_file_camps, index = False)                
+        camps_df.to_csv(out_file_camps, index = False)                
                 
         print("Data successfully imported")                
