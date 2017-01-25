@@ -6,7 +6,7 @@ Created on Wed Jan 25 10:30:26 2017
 """
 
 import xmlrpc.client
-from datetime import datetime 
+from datetime import datetime, timedelta 
 import pandas as pd
 
 from keboola import docker
@@ -24,7 +24,15 @@ class Campaigns:
         password = parameters.get('password')
         
         start_date = parameters.get('start_date')
+        
+               
         end_date = parameters.get('end_date')
+        
+        if(type(end_date) == int):
+            offset = end_date
+            
+            end_date = datetime.today() + timedelta(days=offset)
+            end_date = end_date.strftime("%Y-%m-%d")
         
         
         s = xmlrpc.client.ServerProxy('https://api.sklik.cz/cipisek/RPC2')
@@ -69,15 +77,7 @@ class Campaigns:
             # Get the campaigns table
             res = s.campaigns.get(dict(session=session), [camp_ids[ix]])
             
-            df = pd.DataFrame.from_dict(res['campaigns'])   
-            
-            cols = ['id','name','deleted',
-                    'status', 'dayBudget', 'exhaustedDayBudget',
-                    'adSelection','createDate','totalBudget',
-                    'exhaustedTotalBudget', 'totalClicks',
-                    'exhaustedTotalClicks', 'userId'] 
-                    
-            camps.append(df[cols])
+            camps.append(res)
         
         stats_df = pd.DataFrame.from_dict(stats)
         stats_df = stats_df[['campaign_id',
@@ -86,9 +86,17 @@ class Campaigns:
                                 'clicks',
                                 'price',
                                 'impressions']]
+                                
+                                
+        camps_cols = ['id','name','deleted',
+                    'status', 'dayBudget', 'exhaustedDayBudget',
+                    'adSelection','createDate','totalBudget',
+                    'exhaustedTotalBudget', 'totalClicks',
+                    'exhaustedTotalClicks', 'userId'] 
+                    
         
         camps_df = pd.DataFrame.from_dict(camps)                                
-
+        camps_df = camps_df[camps_cols]
         ## Get reading parameters from KBC                                
         
         tables = cfg.get_expected_output_tables()
