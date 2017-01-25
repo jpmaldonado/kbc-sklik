@@ -10,7 +10,7 @@ import sys
 import traceback
 
 try:
-    app = zin_sklik.App()
+    app = zin_sklik.Campaigns()
     app.run()
 except ValueError as err:
     print(err, file=sys.stderr)
