@@ -65,12 +65,21 @@ class Campaigns:
         output = pd.DataFrame.from_dict(stats)
         
         
+        tables = cfg.get_expected_output_tables()
+        if len(tables) != 1:
+            raise ValueError("Output mapping must contain one table only.")
+        out_table = tables[0]
+
+        # physical location of the target file with output data
+        out_file_path = out_table['full_path']
+        
+        
         ## Save the CSV
         output[['campaign_id',
                 'campaign_name',
                 'date',
                 'clicks',
                 'price',
-                'impressions']].to_csv("out/tables/sklik_demo.csv", index = False)
+                'impressions']].to_csv(out_file_path, index = False)
                 
         print("Data successfully imported")                
