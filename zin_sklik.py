@@ -28,11 +28,19 @@ class Campaigns:
                
         end_date = parameters.get('end_date')
         
+        ## Trick for the dates
         if(type(end_date) == int):
             offset = end_date
             
             end_date = datetime.today() + timedelta(days=offset)
             end_date = end_date.strftime("%Y-%m-%d")
+
+        # start date            
+        if(type(start_date) == int):
+            offset = start_date
+            
+            start_date = datetime.today() + timedelta(days=offset)
+            start_date = end_date.strftime("%Y-%m-%d")
         
         
         s = xmlrpc.client.ServerProxy('https://api.sklik.cz/cipisek/RPC2')
